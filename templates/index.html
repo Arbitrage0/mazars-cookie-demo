@@ -1,0 +1,136 @@
+<!DOCTYPE HTML>
+<head>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>
+  <script type="text/javascript">
+    function fnSetCookie(sName, sMode)
+    {
+      document.cookie=""+sName+"="+sMode + "; expires=30/06/2022;";
+      $("#btnClear").html("Clear Cookies");
+      document.getElementById("btnClear").disabled = false;
+    }
+  
+    function fnGetCookie(sName)
+    {
+      // Function used to return value of cookie matching supplied parameter
+      var sResult = document.cookie.match ( '(^|;) ?' + sName + '=([^;]*)(;|$)' );
+
+      if(sResult)
+        return (unescape(sResult[2]));
+      else
+        return null;
+    }
+    
+    $(document).ready(function() {
+      // Get current value of "links" cookie
+      var sOption = fnGetCookie("links");
+      if(sOption === "hide")
+      {
+        // If the cookie is set to hide automatically hide content
+        // when page loads
+        $("#quicklinks").hide();
+        $("#btnHide").html("Show Quick Links");
+      }
+        
+      $("#btnHide").click(function() {
+        var sButton = $("#btnHide").html();
+        if(sButton === "Hide Quick Links")
+        {
+          $("#quicklinks").slideUp(750);
+          $("#btnHide").html("Show Quick Links");
+          fnSetCookie("links", "hide");
+        }
+        else
+        {
+          $("#quicklinks").slideDown(750);
+          $("#btnHide").html("Hide Quick Links");
+          fnSetCookie("links", "show");
+        }
+        /*console.log("Here are the cookies that are stored on your computer!");
+        console.log(document.cookie.split(";"));*/
+      })
+      
+      $("#btnClear").click(function () {
+        var cookies = document.cookie.split(";");
+
+        for (var i = 0; i < cookies.length; i++) {
+            var cookie = cookies[i];
+            var eqPos = cookie.indexOf("=");
+            var name = eqPos > -1 ? cookie.substr(0, eqPos) : cookie;
+            document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+        }
+        $("#btnClear").html("Cookies Cleared!");
+        document.getElementById("btnClear").disabled = true;
+
+        fetch("https://python.ik.repl.co/", {
+          method: "POST",
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({"delete": true})
+        })
+      });
+    });
+  </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <title>Mazars Cookie Demo</title>
+</head>
+<html>
+<body> 
+  <img src="https://www.mazars.com/extension/ezmazars_rwdesign/design/mazars2020/images/mazars-logo.png" width="175" style="border: white">
+  <h1>Basic Interactive Cookie Explainer</h1>
+  <hr style="width:50%" />
+  <p>{{ message }}</p>
+    <button id="btnHide" type="button">Hide Quick Links</button>
+    <button id="btnClear" type="button">Clear Cookies</button>
+    <br />
+
+  <div id="quicklinks">
+    <center><h2>Quick Links</h2>
+    <a href="https://www.aboutcookies.org.uk/">Learn about cookies!</a><br/><br/>
+    <a href="https://www.mazars.co.uk/Home/Services/Consulting/Technology-and-Digital/Privacy-Data-Protection">Learn more about Privacy & Data Protection at Mazars</a>
+    </center>
+  </div><br />
+  <hr style="width:50%" />
+  <div id="mainbody" style="text-align: left">
+    <p>Hello! In this explainer / website demo, we'll be walking you through what cookies are, the different types of cookies and their purposes, and how websites can be compliant with cookie legislation - <strong>unlike this one!</strong> Cookies are small text files sent by a website (just like how a website also serves you content like pictures and words) and stored locally on your computer that contain information - they are another tool in a developer's arsenal for making websites do things they want to.<br /><br />In going through this explainer, we will also show you how to use your browser's tools to find the cookies that a website deploys on your device, how to understand and analyze them, and how they can be deleted (whether by using the browser's tools, or in the design of the website itself).<br /><br />A quick 1-minute audio summary of each step is also provided to highlight the key points and the purposes behind it.</p><h2><u>Step 0:</u></h2><audio controls><source src="{{ url_for('static', filename='Step 0.m4a') }}" type="audio/mp4">Your browser does not support the audio element.</audio><p> To get started: <ul><li>Note that the website can detect that this is the first time you've visited the page - and every time you refresh or revisit (without closing the browser entirely), it keeps track of the number of times you've visited the page! </li><li>Furthermore, also note that you can show or hide the quick links and the website will remember your preference!</li><li>Lastly, the cookie banner at the bottom of the page <strong>(which is not compliant with the law but we'll get to that in a second...)</strong> also has a close button, which if you click will not show the banner again. All of these happen because of cookies!</li></ul>Try it!</p>
+    <p>Once you've messed around enough, you can click the "Clear Cookies" button on top, and you can see that all of these features revert back to their original state. But there's something more insidious going on... so let's pop the hood and take a look underneath to see what's happening. Just a quick note - this demo will be a lot easier to follow if you're using Chrome, Firefox or Edge (and not Internet Explorer - but who uses that these days anyway?), so onward!</p>
+    <h2><u>Step 1:</u></h2><audio controls><source src="{{ url_for('static', filename='Step 1.m4a') }}" type="audio/mp4">Your browser does not support the audio element.</audio>
+    <p>The first thing that you'll need to do is open your browser's developer tools tab (which is where all the geeky stuff lies!). You can do so by right-clicking anywhere on the website so that a menu appears, and from the menu select "Inspect", which should look like the image below. You can also open the developer tools tab using any of the methods <a href="https://developer.mozilla.org/en-US/docs/Learn/Common_questions/What_are_browser_developer_tools" target="_blank">explained here</a>.</p><br />
+    <div style="text-align:center"><img src="{{ url_for('static', filename='right.jpg') }}" width="870" style="max-width:100%; text-align: center"/></div>
+    <p>Hopefully you should see a panel pop up once you click inspect. Normally it will open the "Elements" tab, but the tab we're interested in is the "Applications" tab, where you can see the website's cookies as per the image below. If you can't find the "Applications" tab, click the ">>" button at the right end which will list all of the hidden tabs. Then, under the "Cookies" option on the menu, click the link which will show a list of all the cookies used by the website.</p><br />
+    <div style="text-align:center"><img src="{{ url_for('static', filename='find2.png') }}" width="870" style="max-width:100%; text-align: center"/></div>
+    <h2><u>Step 2:</u></h2><audio controls><source src="{{ url_for('static', filename='Step 2.m4a') }}" type="audio/mp4">Your browser does not support the audio element.</audio>
+    <p>Once you see the list of cookies in the table, you will see a number of things that are of interest of us, which will help in using the tool and understanding how the cookie functions. Note the image below: </p>
+    <div style="text-align:center"><img src="{{ url_for('static', filename='bar.png') }}" width="870" style="max-width:100%; text-align: center"/></div>
+    <p>Firstly, this website uses 4 cookies. If you do not see all of them, don't worry! You probably cleared them out before opening the tab - just do all of the things in Step 0 again, and click the refresh button (circled in red in the image) and you should be able to see them again.</p>
+    <p>The table has a few columns that tell us about the cookie's properties, in particular: <ul><li>The <i>Name</i> and <i>Value</i> columns are self-explanatory. </li><li>The <i>Expires / Max-Age</i> column (circled in lime green) tells us about when the cookie expires, or how long it remains valid for (and thus used by the website) before it gets deleted. Within this, there is a specific type of cookie known as <i>Session</i> cookies, which get deleted the moment the browser is closed.</li><li><i>HttpOnly</i> cookies (circled in orange, and indicated by the presence of a tick mark underneath) are cookies that can only be accessed and modified by the server. These types of cookies are normally used when containing sensitive data (like authentication tokens, which if stolen can be used to impersonate a user) that shouldn't be accessed by insecure scripts on the website.</li>
+    </ul>
+    With this understanding, we can now examine what the cookies do and how these properties affect their function: 
+    <ul><li><strong>cookiebanner-accepted</strong>: This cookie gets deployed when the user closes the cookie banner at the bottom of the page. Note the fact that the cookie expires in the year 9999 (which is the longest a cookie is allowed to remain valid)!</li>
+    <li><strong>links</strong>: This cookie has two values, "show" and "hide", depending on whether the user has indicated a preference for whether quick links should be hidden or not. This is a simple example of a "functional" or "preference" cookie.</li>
+    <li><strong>session_visits</strong>: This cookie tracks the number of visits made to the site <u>in one session</u>. If the browser is closed, the count starts again from one. This is a simple version of an analytics cookie.</li>
+    <li><strong>tracking_id</strong>: This is the cookie circled in blue, and its value is a random string of numbers and letters. These kinds of cookies can be used to uniquely identify a user and track their activity across the website, which is where most of the privacy risks lie if the user is not made aware of it (just like you weren't, until you found out using the developer tools)!</li></ul>
+    Now you know how to use the browser's developer tools to see what cookies a website is deploying. However, these cookies are actually stored locally on your computer's filesystem; to find out which folders contain the cookie files depending on which browser you are using, you can look at the <a href="https://www.digitalcitizen.life/cookies-location-windows-10/" target="_blank">guidance here</a>.
+    </p>
+    <h2><u>Step 3:</u></h2><audio controls><source src="{{ url_for('static', filename='Step 3.m4a') }}" type="audio/mp4">Your browser does not support the audio element.</audio>
+    <p>Open the developer tools tab once more, and while it's open, scroll up to the top of the webpage to click the "Clear Cookies" button. When the button is clicked, you should see all the cookies disappear from the table - except the tracking cookie. In fact, if you leave the webpage or close the browser entirely and return, the cookie will still be there!</p>
+    <p>The last part of this explainer will be to show you how to delete cookies even if the website won't provide you with a way to. This process is fairly straightforward, and most browsers will normally delete cookies associated with a website when deleting the brower history, which is a simple first way.</p>
+    <p>But when you want to delete specific cookies using developer tools, all you need to do is right-click on the cookie in the cookie table and select "Delete" from the menu as per the image below:</p>
+    <div style="text-align:center"><img src="{{ url_for('static', filename='deletemanual.jpg') }}" width="870" style="max-width:100%; text-align: center"/></div>
+    <p>Or, it is also possible to delete all the cookies from the website by right-clicking on the link under the "Cookies" section on the side menu, and then clicking "Clear":</p>
+    <div style="text-align:center"><img src="{{ url_for('static', filename='deletefull.jpg') }}" width="870" style="max-width:100%; text-align: center"/></div>
+    <h2><u>Basic legal principles:</u></h2>
+    <p>As you may have already noticed, there are a few issues with the way this website is using cookies: <ul><li>One of the cookies has the longest possible expiration date and will continue to stay on your computer if not deleted.</li><li>Another tracking cookie was secretly placed without you being informed about it.</li><li>The button to clear cookies does not actually clear all the cookies and leaves the hidden one in place.</li><li>The website banner is also not informative and simply says that continuing to use the website counts as agreeing to the cookies being deployed.</li></ul>
+    Although there are differences in how countries tackle the issue of cookies in their legislation, there are basic principles that would normally apply across the board, which need to be taken into consideration when designing websites: 
+    <ul><li><strong>Transparency:</strong> Providing users with information about what cookies are being deployed and for what purpose.</li>
+    <li><strong>Gaining informed consent:</strong> Which is especially necessary for cookies that track user behaviour and are not necessary for the website to function.</li>
+    <li><strong>Withdrawals:</strong> Users should be able to delete cookies and withdraw consent as easily as they were given to deploy cookies in the first place.</li></ul>
+    There is increasing scrutiny around compliance with cookie legislation, with regulators <a href="https://techcrunch.com/2020/12/10/france-fines-google-120m-and-amazon-42m-for-dropping-tracking-cookies-without-consent/" target="_blank">imposing record fines</a> for the use of tracking cookies without consent - which further highlights the importance of compliance with these principles.</p>
+  </div>
+  <hr style="width: 50%" />
+  <p><i>- Conceptualized, written, and built by Izaan Khan</i></p>
+<script type="text/javascript" id="cookiebanner"
+  src="https://cdn.jsdelivr.net/gh/dobarkod/cookie-banner@1.2.2/dist/cookiebanner.min.js"></script>
+
+</body>
+</html>
